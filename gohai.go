@@ -94,7 +94,7 @@ func main() {
 
 func runPlugins(gohai map[string]interface{}) error {
 	// TODO: make plugin dir configurable
-	pDir, err := os.Open(plugin.PluginDir)
+	pDir, err := os.Open(plugin.DefaultPluginDir)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func runPlugins(gohai map[string]interface{}) error {
 	<-readych
 
 	for _, v := range pRun {
-		cmdStr := plugin.PluginDir + "/" + v
+		cmdStr := plugin.DefaultPluginDir + "/" + v
 		// TODO: make socket/network addr passable to plugin
 		cmd := exec.Command(cmdStr)
 		var stderr bytes.Buffer
@@ -139,7 +139,7 @@ func runPlugins(gohai map[string]interface{}) error {
 
 func startPluginServer(stopch <-chan struct{}, readych, donech chan<- struct{}) {
 	// TODO: make socket/network addr configurable
-	uaddr, _ := net.ResolveUnixAddr("unix", "/tmp/gosudar.sock")
+	uaddr, _ := net.ResolveUnixAddr("unix", plugin.DefaultSocket)
 	l, err := net.ListenUnix("unix", uaddr)
 	readych <- struct{}{}
 	sigch := make(chan os.Signal, 1)

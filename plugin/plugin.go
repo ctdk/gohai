@@ -3,7 +3,9 @@ package plugin
 type Info struct {}
 
 var InfoCh chan map[string]interface{}
-var PluginDir = "/tmp/plugins"
+var DefaultPluginDir = "/var/lib/gohai/plugins"
+var DefaultSocket = "/tmp/gohai.sock"
+var DefaultAddr = "127.0.0.1:9966"
 
 func init() {
 	InfoCh = make(chan map[string]interface{}, 1)
