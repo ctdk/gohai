@@ -2,6 +2,7 @@ package platform
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -37,6 +38,10 @@ func getPlatformInfo() (platformInfo map[string]interface{}, err error) {
 
 	platformInfo["GOOS"] = runtime.GOOS
 	platformInfo["GOOARCH"] = runtime.GOARCH
+	platformInfo["hostname"], err = os.Hostname()
+	if err != nil {
+		return platformInfo, err
+	}
 
 	return
 }

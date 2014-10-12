@@ -11,7 +11,6 @@ func getArchInfo() (systemInfo map[string]interface{}, err error) {
 	if err != nil {
 		return
 	}
-	systemInfo["hostname"] = computerSystem["Name"]
 	systemInfo["machine"] = computerSystem["SystemType"]
 
 	os, err := utils.WindowsWMICommand("OS", "Version", "Caption")

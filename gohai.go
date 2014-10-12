@@ -1,15 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"os"
 
-	"github.com/DataDog/gohai/cpu"
-	"github.com/DataDog/gohai/filesystem"
-	"github.com/DataDog/gohai/memory"
-	"github.com/DataDog/gohai/network"
-	"github.com/DataDog/gohai/platform"
+	"github.com/ctdk/gohai/cpu"
+	"github.com/ctdk/gohai/filesystem"
+	"github.com/ctdk/gohai/memory"
+	"github.com/ctdk/gohai/network"
+	"github.com/ctdk/gohai/platform"
+	"github.com/ctdk/gohai/kernel"
 )
 
 type Collector interface {
@@ -22,6 +24,10 @@ var collectors = []Collector{
 	&filesystem.FileSystem{},
 	&memory.Memory{},
 	&network.Network{},
+	&kernel.Kernel{},
+}
+
+var topLevelCollectors = []Collector{
 	&platform.Platform{},
 }
 
@@ -35,6 +41,22 @@ func Collect() (result map[string]interface{}, err error) {
 			continue
 		}
 		result[collector.Name()] = c
+	}
+	// platform is weird, this stuff is top level
+	for _, collector := range topLevelCollectors {
+		c, err := collector.Collect()
+		if err != nil {
+			log.Printf("[%s] %s", collector.Name(), err)
+			continue
+		}
+		switch c := c.(type) {
+			case map[string]interface{}:
+				for k, v := range c {
+					result[k] = v
+				}
+			default:
+				result[collector.Name()] = c
+		}
 	}
 
 	return
@@ -52,6 +74,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	var out bytes.Buffer
+	json.Indent(&out, buf, "", "  ")
 
-	os.Stdout.Write(buf)
+	out.WriteTo(os.Stdout)
 }
