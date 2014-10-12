@@ -4,7 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"log"
+	"net"
+	"net/rpc"
+	"net/rpc/jsonrpc"
 	"os"
+	"os/exec"
+	"os/signal"
+	"syscall"
 
 	"github.com/ctdk/gohai/cpu"
 	"github.com/ctdk/gohai/filesystem"
@@ -12,6 +18,7 @@ import (
 	"github.com/ctdk/gohai/memory"
 	"github.com/ctdk/gohai/network"
 	"github.com/ctdk/gohai/platform"
+	"github.com/ctdk/gohai/plugin"
 )
 
 type Collector interface {
@@ -69,6 +76,11 @@ func main() {
 		panic(err)
 	}
 
+	err = runPlugins(gohai)
+	if err != nil {
+		panic(err)
+	}
+
 	buf, err := json.Marshal(gohai)
 
 	if err != nil {
@@ -78,4 +90,95 @@ func main() {
 	json.Indent(&out, buf, "", "  ")
 
 	out.WriteTo(os.Stdout)
+}
+
+func runPlugins(gohai map[string]interface{}) error {
+	// TODO: make plugin dir configurable
+	pDir, err := os.Open(plugin.PluginDir)
+	if err != nil {
+		return err
+	}
+	pRun, err := pDir.Readdirnames(0)
+	if err != nil {
+		return err
+	}
+	
+	stopch := make(chan struct{}, 1)
+	donech := make(chan struct{}, 1)
+	readych := make(chan struct{}, 1)
+	go startPluginServer(stopch, readych, donech)
+
+	go func() {
+		for {
+			pi := <- plugin.InfoCh
+			// TODO: make a merge function. Also, a mutex for the
+			// info hash.
+			for k, v := range pi {
+				gohai[k] = v
+			}
+		}
+	}()
+	<-readych
+
+	for _, v := range pRun {
+		cmdStr := plugin.PluginDir + "/" + v
+		// TODO: make socket/network addr passable to plugin
+		cmd := exec.Command(cmdStr)
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
+		if err := cmd.Run(); err != nil {
+			log.Println(stderr.String())
+			return err
+		}
+	}
+
+	stopch <- struct{}{}
+	<-donech
+	return nil
+}
+
+func startPluginServer(stopch <-chan struct{}, readych, donech chan<- struct{}) {
+	// TODO: make socket/network addr configurable
+	uaddr, _ := net.ResolveUnixAddr("unix", "/tmp/gosudar.sock")
+	l, err := net.ListenUnix("unix", uaddr)
+	readych <- struct{}{}
+	sigch := make(chan os.Signal, 1)
+	signal.Notify(sigch, os.Interrupt, os.Kill, syscall.SIGTERM)
+	go func(c chan os.Signal){
+		<-c
+		l.Close()
+		os.Exit(0)
+	}(sigch)
+
+	if err != nil {
+		log.Printf("Failed to start socket for plugins: %s\n", err.Error())
+		os.Exit(1)
+	}
+	rpc.Register(new(plugin.Info))
+	done := false
+	go func(){
+		for {
+			log.Printf("Waiting for plugins...")
+			if conn, err := l.AcceptUnix(); err == nil {
+				log.Println("reading data from plugin...")
+				go jsonrpc.ServeConn(conn)
+			} else {
+				if !done {
+					log.Printf("Plugin connection failed: %s ", err.Error())
+					os.Exit(1)
+				} else {
+					return
+				}
+			}
+			
+		}
+	}()
+	<-stopch
+	done = true
+	err = l.Close()
+	donech <- struct{}{}
+	if err != nil {
+		log.Println("err closing ", err)
+	}
+	return
 }
