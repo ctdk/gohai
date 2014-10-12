@@ -8,10 +8,10 @@ import (
 
 	"github.com/ctdk/gohai/cpu"
 	"github.com/ctdk/gohai/filesystem"
+	"github.com/ctdk/gohai/kernel"
 	"github.com/ctdk/gohai/memory"
 	"github.com/ctdk/gohai/network"
 	"github.com/ctdk/gohai/platform"
-	"github.com/ctdk/gohai/kernel"
 )
 
 type Collector interface {
@@ -50,12 +50,12 @@ func Collect() (result map[string]interface{}, err error) {
 			continue
 		}
 		switch c := c.(type) {
-			case map[string]interface{}:
-				for k, v := range c {
-					result[k] = v
-				}
-			default:
-				result[collector.Name()] = c
+		case map[string]interface{}:
+			for k, v := range c {
+				result[k] = v
+			}
+		default:
+			result[collector.Name()] = c
 		}
 	}
 

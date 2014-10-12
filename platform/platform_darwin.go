@@ -3,13 +3,12 @@
 package platform
 
 import (
-	"encoding/binary"
 	"bytes"
+	"encoding/binary"
 	"strings"
 	"syscall"
 	"time"
 )
-
 
 func updateArchInfo(archInfo map[string]interface{}, values []string) {
 	archInfo["kernel_name"] = values[0]
@@ -23,9 +22,9 @@ func updateArchInfo(archInfo map[string]interface{}, values []string) {
 func getArchInfo() (map[string]interface{}, error) {
 	info := make(map[string]interface{})
 	// still need modules
-	kernKeys := map[string]string{ "ostype": "os", "osrelease": "os_version" }
+	kernKeys := map[string]string{"ostype": "os", "osrelease": "os_version"}
 	for sysctlName, gohaiName := range kernKeys {
-		k, err := syscall.Sysctl("kern."+sysctlName)
+		k, err := syscall.Sysctl("kern." + sysctlName)
 		if err != nil {
 			return nil, err
 		}
@@ -42,7 +41,6 @@ func getArchInfo() (map[string]interface{}, error) {
 	buf := bytes.NewBuffer([]byte(u))
 	binary.Read(buf, binary.LittleEndian, tval)
 	info["uptime_seconds"] = int64(time.Since(time.Unix(tval.Unix())).Seconds())
-	
 
 	return info, nil
 }

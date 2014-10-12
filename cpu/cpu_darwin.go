@@ -11,25 +11,25 @@ import (
 func getCpuInfo() (map[string]interface{}, error) {
 	info := make(map[string]interface{})
 
-	cpuKeys := map[string]string{ "vendor": "vendor_id", "brand_string": "model_name" }
+	cpuKeys := map[string]string{"vendor": "vendor_id", "brand_string": "model_name"}
 	for sysctlName, gohaiName := range cpuKeys {
-		k, err := syscall.Sysctl("machdep.cpu."+sysctlName)
+		k, err := syscall.Sysctl("machdep.cpu." + sysctlName)
 		if err != nil {
 			return nil, err
 		}
 		info[gohaiName] = k
 	}
-	cpuKeyInts := map[string]string{ "model": "model", "family": "family", "stepping": "stepping" }
+	cpuKeyInts := map[string]string{"model": "model", "family": "family", "stepping": "stepping"}
 	for sysctlName, gohaiName := range cpuKeyInts {
-		k, err := syscall.SysctlUint32("machdep.cpu."+sysctlName)
+		k, err := syscall.SysctlUint32("machdep.cpu." + sysctlName)
 		if err != nil {
 			return nil, err
 		}
 		info[gohaiName] = k
 	}
-	hwKeyInts := map[string]string{ "physicalcpu":"real", "logicalcpu":"total", "cpufrequency":"mhz" }
+	hwKeyInts := map[string]string{"physicalcpu": "real", "logicalcpu": "total", "cpufrequency": "mhz"}
 	for sysctlName, gohaiName := range hwKeyInts {
-		k, err := sysctluint64("hw."+sysctlName)
+		k, err := sysctluint64("hw." + sysctlName)
 		if err != nil {
 			return nil, err
 		}

@@ -3,8 +3,8 @@
 package kernel
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -14,9 +14,9 @@ import (
 func getKernelInfo() (map[string]interface{}, error) {
 	info := make(map[string]interface{})
 	// still need modules
-	kernKeys := map[string]string{ "ostype": "name", "osrelease": "release", "version":"version" }
+	kernKeys := map[string]string{"ostype": "name", "osrelease": "release", "version": "version"}
 	for sysctlName, gohaiName := range kernKeys {
-		k, err := syscall.Sysctl("kern."+sysctlName)
+		k, err := syscall.Sysctl("kern." + sysctlName)
 		if err != nil {
 			return nil, err
 		}
@@ -45,7 +45,7 @@ func getKernelInfo() (map[string]interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		info["modules"].(map[string]map[string]interface{})[s[4]] = map[string]interface{}{ "version": s[5], "size": size, "index": s[1], "refcount": s[2] }
+		info["modules"].(map[string]map[string]interface{})[s[4]] = map[string]interface{}{"version": s[5], "size": size, "index": s[1], "refcount": s[2]}
 	}
 
 	return info, nil
