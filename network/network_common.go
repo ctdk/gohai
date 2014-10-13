@@ -1,3 +1,5 @@
+// +build linux darwin
+
 package network
 
 import (
@@ -130,4 +132,37 @@ func macAddress() (string, error) {
 		}
 	}
 	return "", errors.New("not connected to the network")
+}
+
+func networkInterfaces() (map[string]interface{}, error) {
+	ifaces := make(map[string]interface{})
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return nil, err
+	}
+	for _, i := range interfaces {
+		iInfo := make(map[string]interface{})
+		iInfo["mtu"] = i.MTU
+		iInfo["flags"] = i.Flags.String()
+		iInfo["mac_addr"] = i.HardwareAddr.String()
+
+		addrs, err := i.Addrs()
+		if err != nil {
+			return nil, err
+		}
+		iAddrs := make(map[string]interface{})
+		for _, a := range addrs {
+			//iAddrs[a.String()] = map[string]interface{}{ "network": a.Network() }
+			ip, _, err := net.ParseCIDR(a.String())
+			if err != nil {
+				return nil, err
+			}
+			iAddrs[ip.String()] = map[string]interface{}{ "len": len(ip) }
+		}
+
+		iInfo["addresses"] = iAddrs 
+
+		ifaces[i.Name] = iInfo
+	}
+	return ifaces, nil
 }
