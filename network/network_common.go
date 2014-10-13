@@ -3,8 +3,12 @@
 package network
 
 import (
+	"bufio"
+	"bytes"
 	"errors"
 	"net"
+	"os/exec"
+	"strings"
 )
 
 type Network struct{}
@@ -153,11 +157,30 @@ func networkInterfaces() (map[string]interface{}, error) {
 		iAddrs := make(map[string]interface{})
 		for _, a := range addrs {
 			//iAddrs[a.String()] = map[string]interface{}{ "network": a.Network() }
-			ip, _, err := net.ParseCIDR(a.String())
+			ip, ipnet, err := net.ParseCIDR(a.String())
 			if err != nil {
 				return nil, err
 			}
-			iAddrs[ip.String()] = map[string]interface{}{ "len": len(ip) }
+			var family string
+			var mask string
+			var broadcast string
+			if ip.To4() == nil {
+				family = "inet6"
+			} else {
+				family = "inet"
+				maskip := net.IPv4(ipnet.Mask[0], ipnet.Mask[1], ipnet.Mask[2], ipnet.Mask[3])
+				mask = maskip.String()
+				if !ip.IsLoopback() {
+					broadcast = net.IPv4(ipnet.IP[0] | (^ipnet.Mask[0]), ipnet.IP[1] | (^ipnet.Mask[1]), ipnet.IP[2] | (^ipnet.Mask[2]), ipnet.IP[3] | (^ipnet.Mask[3])).String()
+				}
+			}
+			iAddrs[ip.String()] = map[string]interface{}{ "family": family }
+			if mask != "" {
+				iAddrs[ip.String()].(map[string]interface{})["netmask"] = mask
+			}
+			if broadcast != "" {
+				iAddrs[ip.String()].(map[string]interface{})["broadcast"] = broadcast
+			}
 		}
 
 		iInfo["addresses"] = iAddrs 
@@ -165,4 +188,21 @@ func networkInterfaces() (map[string]interface{}, error) {
 		ifaces[i.Name] = iInfo
 	}
 	return ifaces, nil
+}
+
+func settings() (map[string]interface{}, error) {
+	s, err := exec.Command("sysctl", "-a", "net").Output()
+	if err != nil {
+		return nil, err
+	}
+	sets := make(map[string]interface{})
+	sread := bufio.NewScanner(bytes.NewBuffer(s))
+	for sread.Scan() {
+		st := strings.Split(sread.Text(), ":")
+		if len(st) < 2 {
+			continue
+		}
+		sets[st[0]] = strings.TrimSpace(st[1])
+	}
+	return sets, nil
 }

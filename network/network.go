@@ -29,5 +29,11 @@ func getNetworkInfo() (networkInfo map[string]interface{}, err error) {
 	}
 	networkInfo["interfaces"] = ifaces
 
+	settings, err := settings()
+	if err != nil {
+		return nil, err
+	}
+	networkInfo["settings"] = settings
+
 	return
 }
