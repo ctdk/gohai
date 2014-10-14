@@ -5,6 +5,23 @@ package network
 func getNetworkInfo() (networkInfo map[string]interface{}, err error) {
 	networkInfo = make(map[string]interface{})
 
+	ifaces, err := networkInterfaces()
+	if err != nil {
+		return nil, err
+	}
+	networkInfo["interfaces"] = ifaces
+
+	settings, err := settings()
+	if err != nil {
+		return nil, err
+	}
+	networkInfo["settings"] = settings
+
+	return
+}
+
+func getTopLevel() (map[string]interface{}, error) {
+	networkInfo := make(map[string]interface{})
 	macaddress, err := macAddress()
 	if err != nil {
 		return networkInfo, err
@@ -22,18 +39,5 @@ func getNetworkInfo() (networkInfo map[string]interface{}, err error) {
 		return networkInfo, err
 	}
 	networkInfo["ipaddressv6"] = ipAddressV6
-
-	ifaces, err := networkInterfaces()
-	if err != nil {
-		return nil, err
-	}
-	networkInfo["interfaces"] = ifaces
-
-	settings, err := settings()
-	if err != nil {
-		return nil, err
-	}
-	networkInfo["settings"] = settings
-
-	return
+	return networkInfo, nil
 }

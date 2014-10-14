@@ -103,7 +103,9 @@ func runPlugins(gohai map[string]interface{}) error {
 	// TODO: make plugin dir configurable
 	pDir, err := os.Open(plugin.DefaultPluginDir)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 	pRun, err := pDir.Readdirnames(0)
 	if err != nil {

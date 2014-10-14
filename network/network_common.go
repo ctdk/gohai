@@ -24,6 +24,17 @@ func (self *Network) Collect() (result interface{}, err error) {
 	return
 }
 
+type TopLevel struct{}
+
+func (t *TopLevel) Name() string {
+	return "top_level"
+}
+
+func (t *TopLevel) Collect() (interface{}, error) {
+	result, err := getTopLevel()
+	return result, err
+}
+
 type Ipv6Address struct{}
 
 func externalIpv6Address() (string, error) {
