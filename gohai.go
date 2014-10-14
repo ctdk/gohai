@@ -17,6 +17,7 @@ import (
 	"github.com/ctdk/gohai/kernel"
 	"github.com/ctdk/gohai/memory"
 	"github.com/ctdk/gohai/network"
+	"github.com/ctdk/gohai/password"
 	"github.com/ctdk/gohai/platform"
 	"github.com/ctdk/gohai/plugin"
 )
@@ -32,10 +33,12 @@ var collectors = []Collector{
 	&memory.Memory{},
 	&network.Network{},
 	&kernel.Kernel{},
+	&password.Password{},
 }
 
 var topLevelCollectors = []Collector{
 	&platform.Platform{},
+	&password.TopLevel{},
 }
 
 func Collect() (result map[string]interface{}, err error) {
@@ -47,7 +50,10 @@ func Collect() (result map[string]interface{}, err error) {
 			log.Printf("[%s] %s", collector.Name(), err)
 			continue
 		}
-		result[collector.Name()] = c
+		// password stuff is nil in windows, I believe
+		if c != nil {
+			result[collector.Name()] = c
+		}
 	}
 	// platform is weird, this stuff is top level
 	for _, collector := range topLevelCollectors {
