@@ -1,6 +1,6 @@
 package plugin
 
-type Info struct {}
+type Info struct{}
 
 var InfoCh chan map[string]interface{}
 var DefaultPluginDir = "/var/lib/gohai/plugins"

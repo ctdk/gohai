@@ -1,10 +1,9 @@
 package password
 
-import (
-
-)
+import ()
 
 type Password struct{}
+
 const name = "etc"
 
 func (p *Password) Name() string {

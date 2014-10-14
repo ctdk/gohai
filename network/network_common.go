@@ -171,10 +171,10 @@ func networkInterfaces() (map[string]interface{}, error) {
 				maskip := net.IPv4(ipnet.Mask[0], ipnet.Mask[1], ipnet.Mask[2], ipnet.Mask[3])
 				mask = maskip.String()
 				if !ip.IsLoopback() {
-					broadcast = net.IPv4(ipnet.IP[0] | (^ipnet.Mask[0]), ipnet.IP[1] | (^ipnet.Mask[1]), ipnet.IP[2] | (^ipnet.Mask[2]), ipnet.IP[3] | (^ipnet.Mask[3])).String()
+					broadcast = net.IPv4(ipnet.IP[0]|(^ipnet.Mask[0]), ipnet.IP[1]|(^ipnet.Mask[1]), ipnet.IP[2]|(^ipnet.Mask[2]), ipnet.IP[3]|(^ipnet.Mask[3])).String()
 				}
 			}
-			iAddrs[ip.String()] = map[string]interface{}{ "family": family }
+			iAddrs[ip.String()] = map[string]interface{}{"family": family}
 			if mask != "" {
 				iAddrs[ip.String()].(map[string]interface{})["netmask"] = mask
 			}
@@ -183,7 +183,7 @@ func networkInterfaces() (map[string]interface{}, error) {
 			}
 		}
 
-		iInfo["addresses"] = iAddrs 
+		iInfo["addresses"] = iAddrs
 
 		ifaces[i.Name] = iInfo
 	}

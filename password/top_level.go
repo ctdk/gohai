@@ -11,7 +11,7 @@ func getTopLevel() (map[string]interface{}, error) {
 	}
 	info := make(map[string]interface{})
 	info["current_user"] = curUser.Username
-	
+
 	rootGroup, err := lookupRootGroup()
 	if err != nil {
 		return nil, err

@@ -22,7 +22,7 @@ func getNetworkInfo() (networkInfo map[string]interface{}, err error) {
 		return networkInfo, err
 	}
 	networkInfo["ipaddressv6"] = ipAddressV6
-	
+
 	ifaces, err := networkInterfaces()
 	if err != nil {
 		return nil, err

@@ -108,7 +108,7 @@ func runPlugins(gohai map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	
+
 	stopch := make(chan struct{}, 1)
 	donech := make(chan struct{}, 1)
 	readych := make(chan struct{}, 1)
@@ -116,7 +116,7 @@ func runPlugins(gohai map[string]interface{}) error {
 
 	go func() {
 		for {
-			pi := <- plugin.InfoCh
+			pi := <-plugin.InfoCh
 			// TODO: make a merge function. Also, a mutex for the
 			// info hash.
 			for k, v := range pi {
@@ -150,7 +150,7 @@ func startPluginServer(stopch <-chan struct{}, readych, donech chan<- struct{}) 
 	readych <- struct{}{}
 	sigch := make(chan os.Signal, 1)
 	signal.Notify(sigch, os.Interrupt, os.Kill, syscall.SIGTERM)
-	go func(c chan os.Signal){
+	go func(c chan os.Signal) {
 		<-c
 		l.Close()
 		os.Exit(0)
@@ -162,7 +162,7 @@ func startPluginServer(stopch <-chan struct{}, readych, donech chan<- struct{}) 
 	}
 	rpc.Register(new(plugin.Info))
 	done := false
-	go func(){
+	go func() {
 		for {
 			log.Printf("Waiting for plugins...")
 			if conn, err := l.AcceptUnix(); err == nil {
@@ -176,7 +176,7 @@ func startPluginServer(stopch <-chan struct{}, readych, donech chan<- struct{}) 
 					return
 				}
 			}
-			
+
 		}
 	}()
 	<-stopch
