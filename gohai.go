@@ -12,14 +12,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ctdk/gohai/cpu"
-	"github.com/ctdk/gohai/filesystem"
-	"github.com/ctdk/gohai/kernel"
-	"github.com/ctdk/gohai/memory"
-	"github.com/ctdk/gohai/network"
-	"github.com/ctdk/gohai/password"
-	"github.com/ctdk/gohai/platform"
-	"github.com/ctdk/gohai/plugin"
+	"github.com/go-chef/gohai/cpu"
+	"github.com/go-chef/gohai/filesystem"
+	"github.com/go-chef/gohai/kernel"
+	"github.com/go-chef/gohai/memory"
+	"github.com/go-chef/gohai/network"
+	"github.com/go-chef/gohai/password"
+	"github.com/go-chef/gohai/platform"
+	"github.com/go-chef/gohai/plugin"
 )
 
 type Collector interface {
@@ -39,6 +39,7 @@ var collectors = []Collector{
 var topLevelCollectors = []Collector{
 	&platform.Platform{},
 	&password.TopLevel{},
+	&network.TopLevel{},
 }
 
 func Collect() (result map[string]interface{}, err error) {
