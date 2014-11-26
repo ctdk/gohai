@@ -41,3 +41,7 @@ func getTopLevel() (map[string]interface{}, error) {
 	networkInfo["ipaddressv6"] = ipAddressV6
 	return networkInfo, nil
 }
+
+func getNetworkCounters() (map[string]interface{}, error) {
+	ifaces := make(map[string]interface{})
+}
