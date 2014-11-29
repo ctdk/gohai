@@ -12,3 +12,7 @@ func (self *Memory) Collect() (result interface{}, err error) {
 	result, err = getMemoryInfo()
 	return
 }
+
+func (self *Memory) Provides() ([]string) {
+	return []string{"memory"}
+}

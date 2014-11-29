@@ -5,7 +5,7 @@ package cpu
 import (
 	"strings"
 	"syscall"
-	"unsafe"
+	"github.com/go-chef/gohai/util"
 )
 
 func getCpuInfo() (map[string]interface{}, error) {
@@ -29,7 +29,7 @@ func getCpuInfo() (map[string]interface{}, error) {
 	}
 	hwKeyInts := map[string]string{"physicalcpu": "real", "logicalcpu": "total", "cpufrequency": "mhz"}
 	for sysctlName, gohaiName := range hwKeyInts {
-		k, err := sysctluint64("hw." + sysctlName)
+		k, err := util.SysctlUint64("hw." + sysctlName)
 		if err != nil {
 			return nil, err
 		}
@@ -47,13 +47,4 @@ func getCpuInfo() (map[string]interface{}, error) {
 	fullInfo["cpu"] = info
 
 	return fullInfo, nil
-}
-
-func sysctluint64(name string) (uint64, error) {
-	v, err := syscall.Sysctl(name)
-	if err != nil {
-		return 0, err
-	}
-	buf := []byte(v)
-	return *(*uint64)(unsafe.Pointer(&buf[0])), nil
 }

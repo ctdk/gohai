@@ -20,25 +20,25 @@ func getMemoryInfo() (map[string]interface{}, error) {
 	// can run afoul of 32 bit limits
 	total, err := util.SysctlUint64("hw.memsize")
 	if err != nil {
-		return memoryInfo, err
+		return nil, err
 	}
 	total = total / 1024 / 1024
 	memoryInfo["total"] = fmt.Sprintf("%dMB", total)
 
 	swapout, err := exec.Command("sysctl", "vm.swapusage").Output() //syscall.Sysctl("vm.swapusage")
 	if err != nil {
-		return memoryInfo, err
+		return nil, err
 	}
 	swap := regexp.MustCompile("total = ").Split(string(swapout), 2)[1]
 	memoryInfo["swap_total"] = strings.Split(swap, " ")[0]
 	pagesize, err := syscall.SysctlUint32("hw.pagesize")
 	if err != nil {
-		return memoryInfo, err
+		return nil, err
 	}
 	memoryInfo["pagesize"] = pagesize
 	out, err := exec.Command("vm_stat").Output()
 	if err != nil {
-		return memoryInfo, err
+		return nil, err
 	}
 	vmread := bufio.NewScanner(bytes.NewBuffer(out))
 	var (
@@ -56,7 +56,7 @@ func getMemoryInfo() (map[string]interface{}, error) {
 				if len(u) > 1 {
 					m, err := strconv.ParseInt(u[1], 10, 64)
 					if err != nil {
-						return memoryInfo, err
+						return nil, err
 					}
 					mem := (m * int64(pagesize)) / 1024 / 1024
 					total_consumed += mem
@@ -82,5 +82,6 @@ func getMemoryInfo() (map[string]interface{}, error) {
 		memoryInfo["free"] = fmt.Sprintf("%dMB", int64(total) - total_consumed)
 	}
 
-	return memoryInfo, nil
+	fullInfo := map[string]interface{}{"memory": memoryInfo}
+	return fullInfo, nil
 }
