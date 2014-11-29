@@ -13,3 +13,7 @@ func (self *Cpu) Collect() (interface{}, error) {
 
 	return result, err
 }
+
+func (self *Cpu) Provides() ([]string) {
+	return []string{ "cpu" }
+}

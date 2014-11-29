@@ -48,5 +48,6 @@ func getKernelInfo() (map[string]interface{}, error) {
 		info["modules"].(map[string]map[string]interface{})[s[4]] = map[string]interface{}{"version": s[5], "size": size, "index": s[1], "refcount": s[2]}
 	}
 
-	return info, nil
+	fullInfo := map[string]interface{}{"kernel": info}
+	return fullInfo, nil
 }

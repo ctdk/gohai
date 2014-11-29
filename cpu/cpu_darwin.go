@@ -43,7 +43,10 @@ func getCpuInfo() (map[string]interface{}, error) {
 	}
 	info["flags"] = strings.Split(strings.ToLower(cpuFlags), " ")
 
-	return info, nil
+	fullInfo := make(map[string]interface{})
+	fullInfo["cpu"] = info
+
+	return fullInfo, nil
 }
 
 func sysctluint64(name string) (uint64, error) {

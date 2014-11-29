@@ -12,3 +12,7 @@ func (k *Kernel) Collect() (interface{}, error) {
 	result, err := getKernelInfo()
 	return result, err
 }
+
+func (k *Kernel) Provides() ([]string) {
+	return []string{"kernel"}
+}

@@ -25,6 +25,7 @@ import (
 type Collector interface {
 	Name() string
 	Collect() (interface{}, error)
+	Provides () []string
 }
 
 var collectors = []Collector{
