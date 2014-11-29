@@ -1,30 +1,18 @@
-// +build linux
-
 package platform
 
-import (
-	"fmt"
-	"os/exec"
-	"regexp"
-	"strings"
-)
+type Platform struct{}
 
-func getArchInfo() (archInfo map[string]interface{}, err error) {
-	archInfo = make(map[string]interface{})
+const name = "platform"
 
-	out, err := exec.Command("uname", unameOptions...).Output()
-	if err != nil {
-		return nil, err
-	}
-	line := fmt.Sprintf("%s", out)
-	values := regexp.MustCompile(" +").Split(line, 7)
-	updateArchInfo(archInfo, values)
+func (self *Platform) Name() string {
+	return name
+}
 
-	out, err = exec.Command("uname", "-v").Output()
-	if err != nil {
-		return nil, err
-	}
-	archInfo["kernel_version"] = strings.Trim(string(out), "\n")
-
+func (self *Platform) Collect() (result interface{}, err error) {
+	result, err = getPlatformInfo()
 	return
+}
+
+func (self *Platform) Provides() ([]string) {
+	return []string{"os","os_version","platform","platform_family","uptime_seconds","ohai_time"}
 }

@@ -19,7 +19,8 @@ func getPasswordInfo() (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return info, nil
+	fullInfo := map[string]interface{}{"etc": info}
+	return fullInfo, nil
 }
 
 func passwdInfo() (map[string]interface{}, error) {
