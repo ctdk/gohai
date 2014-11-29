@@ -25,7 +25,7 @@ func (t *TopLevel) Collect() (interface{}, error) {
 }
 
 func getNetworkInfo() (map[string]interface{}, error) {
-	networkInfo = make(map[string]interface{})
+	networkInfo := make(map[string]interface{})
 
 	ifaces, err := networkInterfaces()
 	if err != nil {
@@ -39,7 +39,7 @@ func getNetworkInfo() (map[string]interface{}, error) {
 	}
 	networkInfo["settings"] = settings
 
-	fullInfo := map[string]interface{}{"network"] = networkInfo
+	fullInfo := map[string]interface{}{"network": networkInfo}
 	topRes, err := getTopLevel()
 	if err != nil {
 		return nil, err

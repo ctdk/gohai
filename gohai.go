@@ -33,7 +33,7 @@ var collectors = []Collector{
 	&filesystem.FileSystem{},
 	&memory.Memory{},
 	&network.Network{},
-	&network.Counters{},
+	//&network.Counters{},
 	&kernel.Kernel{},
 	&password.Password{},
 	&platform.Platform{},
@@ -59,22 +59,6 @@ func Collect() (map[string]interface{}, error) {
 				default: // try?
 					result[collector.Name()] = c
 			}
-		}
-	}
-	// platform is weird, this stuff is top level
-	for _, collector := range topLevelCollectors {
-		c, err := collector.Collect()
-		if err != nil {
-			log.Printf("[%s] %s", collector.Name(), err)
-			continue
-		}
-		switch c := c.(type) {
-		case map[string]interface{}:
-			for k, v := range c {
-				result[k] = v
-			}
-		default:
-			result[collector.Name()] = c
 		}
 	}
 
