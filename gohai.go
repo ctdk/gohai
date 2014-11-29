@@ -36,16 +36,11 @@ var collectors = []Collector{
 	&network.Counters{},
 	&kernel.Kernel{},
 	&password.Password{},
-}
-
-var topLevelCollectors = []Collector{
 	&platform.Platform{},
-	&password.TopLevel{},
-	&network.TopLevel{},
 }
 
-func Collect() (result map[string]interface{}, err error) {
-	result = make(map[string]interface{})
+func Collect() (map[string]interface{}, error) {
+	result := make(map[string]interface{})
 
 	for _, collector := range collectors {
 		c, err := collector.Collect()
@@ -55,7 +50,15 @@ func Collect() (result map[string]interface{}, err error) {
 		}
 		// password stuff is nil in windows, I believe
 		if c != nil {
-			result[collector.Name()] = c
+			switch c := c.(type) {
+				case map[string]interface{}:
+					// TODO: needs a real merge function
+					for k, v := range c {
+						result[k] = v
+					}
+				default: // try?
+					result[collector.Name()] = c
+			}
 		}
 	}
 	// platform is weird, this stuff is top level
@@ -75,7 +78,7 @@ func Collect() (result map[string]interface{}, err error) {
 		}
 	}
 
-	return
+	return result, nil
 }
 
 func main() {
