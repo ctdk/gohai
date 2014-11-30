@@ -11,19 +11,6 @@ import (
 	"strings"
 )
 
-
-
-type TopLevel struct{}
-
-func (t *TopLevel) Name() string {
-	return "top_level"
-}
-
-func (t *TopLevel) Collect() (interface{}, error) {
-	result, err := getTopLevel()
-	return result, err
-}
-
 func getNetworkInfo() (map[string]interface{}, error) {
 	networkInfo := make(map[string]interface{})
 
@@ -47,6 +34,11 @@ func getNetworkInfo() (map[string]interface{}, error) {
 	for k, v := range topRes {
 		fullInfo[k] = v
 	}
+	counters, err := getNetworkCounters()
+	if err != nil {
+		return nil, err
+	}
+	fullInfo["counters"] = counters
 
 	return fullInfo, nil
 }

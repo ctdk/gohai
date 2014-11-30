@@ -33,7 +33,6 @@ var collectors = []Collector{
 	&filesystem.FileSystem{},
 	&memory.Memory{},
 	&network.Network{},
-	//&network.Counters{},
 	&kernel.Kernel{},
 	&password.Password{},
 	&platform.Platform{},
