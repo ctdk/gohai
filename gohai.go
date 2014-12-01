@@ -109,20 +109,24 @@ func runPlugins(gohai map[string]interface{}) error {
 				return
 			}
 			jsonOut := make(map[string]interface{})
-			err = json.Unmarshal(output, jsonOut)
+			err = json.Unmarshal(output, &jsonOut)
 			if err != nil {
 				log.Println(err)
 				return
 			}
+			log.Println("sending output...")
 			outCh <- jsonOut
 		}()
 	}
-	for out := range outCh {
+	for i := 0; i < len(pRun); i++ {
+		out := <- outCh
+		log.Println("received output")
 		// TODO: needs real merge of course
 		for k, v := range out {
 			gohai[k] = v
 		}
 	}
+	log.Println("done with plugins")
 
 	return nil
 }
