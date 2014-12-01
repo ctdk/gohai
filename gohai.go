@@ -3,9 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"log"
-	"os"
-	"os/exec"
 	"github.com/go-chef/gohai/cpu"
 	"github.com/go-chef/gohai/filesystem"
 	"github.com/go-chef/gohai/kernel"
@@ -13,6 +10,9 @@ import (
 	"github.com/go-chef/gohai/network"
 	"github.com/go-chef/gohai/password"
 	"github.com/go-chef/gohai/platform"
+	"log"
+	"os"
+	"os/exec"
 )
 
 // An interface all gohai submodules must satisfy.
@@ -142,7 +142,7 @@ func runPlugins(gohai map[string]interface{}) error {
 	}
 	// Process the returned data from the plugins as it comes in.
 	for i := 0; i < pRunLen; i++ {
-		out := <- outCh
+		out := <-outCh
 		// TODO: needs real merge of course
 		for k, v := range out {
 			gohai[k] = v
