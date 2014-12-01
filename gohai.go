@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-
 	"github.com/go-chef/gohai/cpu"
 	"github.com/go-chef/gohai/filesystem"
 	"github.com/go-chef/gohai/kernel"
@@ -16,13 +15,15 @@ import (
 	"github.com/go-chef/gohai/platform"
 )
 
-type Collector interface {
+// An interface all gohai submodules must satisfy.
+type collector interface {
 	Name() string
 	Collect() (interface{}, error)
 	Provides() []string
 }
 
-var collectors = []Collector{
+// The built-in gohai information collectors to run.
+var collectors = []collector{
 	&cpu.Cpu{},
 	&filesystem.FileSystem{},
 	&memory.Memory{},
@@ -32,9 +33,12 @@ var collectors = []Collector{
 	&platform.Platform{},
 }
 
+// The default plugin directory. TODO: make configurable.
 var defaultPluginDir = "/var/lib/gohai/plugins"
 
-func Collect() (map[string]interface{}, error) {
+// Run the data collectors from above, merge their information, and return it
+// to the caller.
+func collect() (map[string]interface{}, error) {
 	result := make(map[string]interface{})
 
 	for _, collector := range collectors {
@@ -61,17 +65,20 @@ func Collect() (map[string]interface{}, error) {
 }
 
 func main() {
-	gohai, err := Collect()
+	// the built-in data colletors are run here
+	gohai, err := collect()
 
 	if err != nil {
 		panic(err)
 	}
 
+	// now running the external plugins
 	err = runPlugins(gohai)
 	if err != nil {
 		panic(err)
 	}
 
+	// marshal to json, print, and exit
 	buf, err := json.Marshal(gohai)
 
 	if err != nil {
@@ -81,23 +88,39 @@ func main() {
 	json.Indent(&out, buf, "", "  ")
 
 	out.WriteTo(os.Stdout)
+	os.Exit(0)
 }
 
+// Run the external plugins found in the plugin dir. These plugins need to
+// return a JSON hash of data.
 func runPlugins(gohai map[string]interface{}) error {
 	// TODO: make plugin dir configurable
 	pDir, err := os.Open(defaultPluginDir)
 	if err != nil {
+		// Only return an error if Open returned an error that wasn't
+		// "directory does not exist". If the plugin dir doesn't exist,
+		// just return nil, but obviously don't go trying to run the
+		// plugins.
 		if !os.IsNotExist(err) {
 			return err
 		}
+		return nil
 	}
+	// get the names of the plugins to run
 	pRun, err := pDir.Readdirnames(0)
 	if err != nil {
 		return err
 	}
+	pRunLen := len(pRun)
+	if pRunLen == 0 {
+		// no plugins, bail now
+		return nil
+	}
 
-	outCh := make(chan map[string]interface{}, len(pRun))
+	outCh := make(chan map[string]interface{}, pRunLen)
 
+	// For each plugin, spawn a goroutine to run the plugin and place its
+	// returned data into the channel.
 	for _, v := range pRun {
 		go func() {
 			cmdStr := defaultPluginDir + "/" + v
@@ -117,7 +140,8 @@ func runPlugins(gohai map[string]interface{}) error {
 			outCh <- jsonOut
 		}()
 	}
-	for i := 0; i < len(pRun); i++ {
+	// Process the returned data from the plugins as it comes in.
+	for i := 0; i < pRunLen; i++ {
 		out := <- outCh
 		// TODO: needs real merge of course
 		for k, v := range out {
