@@ -72,7 +72,9 @@ There's a lot that needs to be done with gohai still. Here is a partial list:
 Authors
 
 Kentaro Kuribayashi (http://kentarok.org/)
+
 Jeremy Bingham (http://time.to.pullthepl.ug)
+
 Various DataDog people (fill in their names later)
 
 Gohai was originally forked from Kentaro Kubayashi's verity (https://github.com/kentaro/verity) by folks at DataDog, but has been diverging from that since then.
