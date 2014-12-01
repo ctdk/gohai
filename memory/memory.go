@@ -13,6 +13,6 @@ func (self *Memory) Collect() (result interface{}, err error) {
 	return
 }
 
-func (self *Memory) Provides() ([]string) {
+func (self *Memory) Provides() []string {
 	return []string{"memory"}
 }

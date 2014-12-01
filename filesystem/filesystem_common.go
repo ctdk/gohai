@@ -36,6 +36,6 @@ func getFileSystemInfo() (interface{}, error) {
 			fileSystemInfo[values[1]] = setMountInfo(values, fileSystemInfo[values[1]].(map[string]interface{}))
 		}
 	}
-	fullInfo := map[string]interface{}{ "filesystem": fileSystemInfo }
+	fullInfo := map[string]interface{}{"filesystem": fileSystemInfo}
 	return fullInfo, nil
 }

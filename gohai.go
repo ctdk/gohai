@@ -25,7 +25,7 @@ import (
 type Collector interface {
 	Name() string
 	Collect() (interface{}, error)
-	Provides () []string
+	Provides() []string
 }
 
 var collectors = []Collector{
@@ -50,13 +50,13 @@ func Collect() (map[string]interface{}, error) {
 		// password stuff is nil in windows, I believe
 		if c != nil {
 			switch c := c.(type) {
-				case map[string]interface{}:
-					// TODO: needs a real merge function
-					for k, v := range c {
-						result[k] = v
-					}
-				default: // try?
-					result[collector.Name()] = c
+			case map[string]interface{}:
+				// TODO: needs a real merge function
+				for k, v := range c {
+					result[k] = v
+				}
+			default: // try?
+				result[collector.Name()] = c
 			}
 		}
 	}

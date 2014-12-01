@@ -3,9 +3,9 @@
 package cpu
 
 import (
+	"github.com/go-chef/gohai/util"
 	"strings"
 	"syscall"
-	"github.com/go-chef/gohai/util"
 )
 
 func getCpuInfo() (map[string]interface{}, error) {

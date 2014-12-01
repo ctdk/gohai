@@ -17,16 +17,16 @@ func updatefileSystemInfo(values []string) map[string]interface{} {
 	iavail, _ := strconv.Atoi(values[7])
 	totalInodes := iused + iavail
 	return map[string]interface{}{
-		"block_size": "1024",
-		"kb_size":    values[2],
-		"kb_used":    values[3],
-		"kb_available": values[4],
-		"percent_used": values[5],
-		"inodes_used": values[6],
-		"inodes_available": values[7],
+		"block_size":          "1024",
+		"kb_size":             values[2],
+		"kb_used":             values[3],
+		"kb_available":        values[4],
+		"percent_used":        values[5],
+		"inodes_used":         values[6],
+		"inodes_available":    values[7],
 		"inodes_percent_used": values[8],
-		"total_inodes": strconv.Itoa(totalInodes),
-		"mount": values[9],
+		"total_inodes":        strconv.Itoa(totalInodes),
+		"mount":               values[9],
 	}
 }
 

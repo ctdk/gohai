@@ -25,8 +25,8 @@ func (p *Password) Collect() (interface{}, error) {
 	return result, err
 }
 
-func (p *Password) Provides() ([]string) {
-	return []string{"etc","current_user","root_group"}
+func (p *Password) Provides() []string {
+	return []string{"etc", "current_user", "root_group"}
 }
 
 type TopLevel struct{}

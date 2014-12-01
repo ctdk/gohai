@@ -13,6 +13,6 @@ func (self *Platform) Collect() (result interface{}, err error) {
 	return
 }
 
-func (self *Platform) Provides() ([]string) {
-	return []string{"os","os_version","platform","platform_family","uptime_seconds","ohai_time"}
+func (self *Platform) Provides() []string {
+	return []string{"os", "os_version", "platform", "platform_family", "uptime_seconds", "ohai_time"}
 }

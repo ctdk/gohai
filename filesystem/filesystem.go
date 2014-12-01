@@ -13,6 +13,6 @@ func (self *FileSystem) Collect() (result interface{}, err error) {
 	return
 }
 
-func (self *FileSystem) Provides()([]string) {
+func (self *FileSystem) Provides() []string {
 	return []string{"filesystem"}
 }

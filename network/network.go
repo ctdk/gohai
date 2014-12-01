@@ -13,6 +13,6 @@ func (self *Network) Collect() (result interface{}, err error) {
 	return
 }
 
-func (self *Network) Provides() ([]string) {
-	return []string{"network", "counters", "macaddress","ipaddress","ipaddressv6"}
+func (self *Network) Provides() []string {
+	return []string{"network", "counters", "macaddress", "ipaddress", "ipaddressv6"}
 }

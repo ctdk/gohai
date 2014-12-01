@@ -42,11 +42,11 @@ func getMemoryInfo() (map[string]interface{}, error) {
 	}
 	vmread := bufio.NewScanner(bytes.NewBuffer(out))
 	var (
-		active int64
-		inactive int64
+		active         int64
+		inactive       int64
 		total_consumed int64
 	)
-	fields := map[string]string{ "active": "Pages active:", "inactive": "Pages inactive:", "wired down": "Pages wired down:" }
+	fields := map[string]string{"active": "Pages active:", "inactive": "Pages inactive:", "wired down": "Pages wired down:"}
 	re := regexp.MustCompile(`(\d+)\.$`)
 	for vmread.Scan() {
 		line := vmread.Text()
@@ -79,7 +79,7 @@ func getMemoryInfo() (map[string]interface{}, error) {
 		memoryInfo["inactive"] = fmt.Sprintf("%dMB", inactive)
 	}
 	if total_consumed > 0 {
-		memoryInfo["free"] = fmt.Sprintf("%dMB", int64(total) - total_consumed)
+		memoryInfo["free"] = fmt.Sprintf("%dMB", int64(total)-total_consumed)
 	}
 
 	fullInfo := map[string]interface{}{"memory": memoryInfo}

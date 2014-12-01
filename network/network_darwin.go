@@ -3,8 +3,8 @@
 package network
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 	"net"
 	"os/exec"
 	"regexp"

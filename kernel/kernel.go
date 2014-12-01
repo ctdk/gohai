@@ -13,6 +13,6 @@ func (k *Kernel) Collect() (interface{}, error) {
 	return result, err
 }
 
-func (k *Kernel) Provides() ([]string) {
+func (k *Kernel) Provides() []string {
 	return []string{"kernel"}
 }
