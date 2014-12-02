@@ -10,6 +10,7 @@ import (
 	"github.com/go-chef/gohai/network"
 	"github.com/go-chef/gohai/password"
 	"github.com/go-chef/gohai/platform"
+	"github.com/go-chef/gohai/util"
 	"log"
 	"os"
 	"os/exec"
@@ -51,9 +52,9 @@ func collect() (map[string]interface{}, error) {
 		if c != nil {
 			switch c := c.(type) {
 			case map[string]interface{}:
-				// TODO: needs a real merge function
-				for k, v := range c {
-					result[k] = v
+				err := util.MergeMap(result, c)
+				if err != nil {
+					return nil, err
 				}
 			default: // try?
 				result[collector.Name()] = c
@@ -143,9 +144,9 @@ func runPlugins(gohai map[string]interface{}) error {
 	// Process the returned data from the plugins as it comes in.
 	for i := 0; i < pRunLen; i++ {
 		out := <-outCh
-		// TODO: needs real merge of course
-		for k, v := range out {
-			gohai[k] = v
+		err := util.MergeMap(gohai, out)
+		if err != nil {
+			return nil
 		}
 	}
 
