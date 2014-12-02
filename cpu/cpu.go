@@ -15,5 +15,5 @@ func (self *Cpu) Collect() (interface{}, error) {
 }
 
 func (self *Cpu) Provides() []string {
-	return []string{"cpu"}
+	return []string{"cpu", "cpu/flags"}
 }

@@ -14,5 +14,5 @@ func (self *Network) Collect() (result interface{}, err error) {
 }
 
 func (self *Network) Provides() []string {
-	return []string{"network", "counters", "macaddress", "ipaddress", "ipaddressv6"}
+	return []string{"network", "counters", "macaddress", "ipaddress", "ipaddressv6", "network/interfaces", "network/settings"}
 }

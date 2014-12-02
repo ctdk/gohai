@@ -27,7 +27,7 @@ func TestMoreComplexMerge(t *testing.T) {
 	a["cpujunk"] = acpu
 	b["baz"] = 4532
 	bcpu := make(map[string]interface{})
-	bcpu["flags"] = []string{ "fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce", "cx8", "apic", "sep", "mtrr", "pge", "mca", "cmov", "pat", "pse36", "clfsh", "ds", "acpi", "mmx" }
+	bcpu["flags"] = []string{"fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce", "cx8", "apic", "sep", "mtrr", "pge", "mca", "cmov", "pat", "pse36", "clfsh", "ds", "acpi", "mmx"}
 	b["foo"] = "meek"
 	bcpu["model"] = "x86-64"
 	b["cpujunk"] = bcpu
@@ -39,7 +39,7 @@ func TestMoreComplexMerge(t *testing.T) {
 		t.Errorf("a[\"foo\"] should have been 'bar', but instead it was '%s'", a["foo"])
 	}
 	if aflags, ok := a["cpujunk"].(map[string]interface{})["flags"].([]string); !ok {
-		t.Errorf("a[\"cpujunk\"][\"flags\"] should have been a slice of strings, but it was '%v' :: %T",  a["cpujunk"].(map[string]interface{})["flags"],  a["cpujunk"].(map[string]interface{})["flags"])
+		t.Errorf("a[\"cpujunk\"][\"flags\"] should have been a slice of strings, but it was '%v' :: %T", a["cpujunk"].(map[string]interface{})["flags"], a["cpujunk"].(map[string]interface{})["flags"])
 	} else {
 		if len(aflags) != 21 {
 			t.Errorf("somehow the length of the flags slice in a wasy wrong, expected 21 got %d", len(aflags))

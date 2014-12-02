@@ -22,19 +22,19 @@ func MergeMap(dst, src map[string]interface{}) error {
 
 func merginate(dst, src interface{}) error {
 	switch dst := dst.(type) {
+	case map[string]interface{}:
+		// but what is src?
+		switch src := src.(type) {
 		case map[string]interface{}:
-			// but what is src?
-			switch src := src.(type) {
-				case map[string]interface{}:
-					err := MergeMap(dst, src)
-					if err != nil {
-						return err
-					}
-				default:
-					; // others later though?
+			err := MergeMap(dst, src)
+			if err != nil {
+				return err
 			}
-		case nil:
-			dst = src
+		default:
+			// others later though?
+		}
+	case nil:
+		dst = src
 	}
 	return nil
 }

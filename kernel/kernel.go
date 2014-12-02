@@ -14,5 +14,5 @@ func (k *Kernel) Collect() (interface{}, error) {
 }
 
 func (k *Kernel) Provides() []string {
-	return []string{"kernel"}
+	return []string{"kernel", "kernel/modules"}
 }

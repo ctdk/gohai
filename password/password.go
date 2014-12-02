@@ -26,16 +26,5 @@ func (p *Password) Collect() (interface{}, error) {
 }
 
 func (p *Password) Provides() []string {
-	return []string{"etc", "current_user", "root_group"}
-}
-
-type TopLevel struct{}
-
-func (t *TopLevel) Name() string {
-	return "top_level"
-}
-
-func (t *TopLevel) Collect() (interface{}, error) {
-	result, err := getTopLevel()
-	return result, err
+	return []string{"etc", "current_user", "root_group", "etc/group", "etc/passwd"}
 }
