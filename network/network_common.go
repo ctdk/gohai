@@ -61,7 +61,7 @@ func getTopLevel() (map[string]interface{}, error) {
 	if err != nil {
 		return networkInfo, err
 	}
-	networkInfo["ipaddressv6"] = ipAddressV6
+	networkInfo["ip6address"] = ipAddressV6
 	return networkInfo, nil
 }
 
