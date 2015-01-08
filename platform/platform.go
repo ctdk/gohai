@@ -14,5 +14,5 @@ func (self *Platform) Collect() (result interface{}, err error) {
 }
 
 func (self *Platform) Provides() []string {
-	return []string{"os", "os_version", "platform", "platform_family", "uptime_seconds", "ohai_time"}
+	return []string{"os", "os_version", "platform", "platform_family", "platform_build", "platform_version", "uptime_seconds", "ohai_time"}
 }

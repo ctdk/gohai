@@ -3,10 +3,16 @@
 package platform
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/binary"
 	"syscall"
 	"time"
+	"fmt"
+	"github.com/go-chef/gohai/util"
+	"os/exec"
+	"regexp"
+	"strings"
 )
 
 func getArchInfo() (map[string]interface{}, error) {
@@ -20,8 +26,32 @@ func getArchInfo() (map[string]interface{}, error) {
 		}
 		info[gohaiName] = k
 	}
-	info["platform"] = "mac_os_x"
 	info["platform_family"] = "mac_os_x"
+	p, err := exec.Command("/usr/bin/sw_vers").Output()
+	if err != nil {
+		return nil, err
+	}
+	pread := bufio.NewScanner(bytes.NewBuffer(p))
+	for pread.Scan() {
+		l := pread.Text()
+		switch {
+			case strings.HasPrefix(l, "ProductName:"):
+				re := regexp.MustCompile(`ProductName:\s+(.+)$`)
+				ml := re.FindStringSubmatch(l)
+				m := ml[1]
+				m = strings.ToLower(m)
+				info["platform"] = strings.Replace(m, " ", "_", -1)
+			case strings.HasPrefix(l, "ProductVersion:"):
+				re := regexp.MustCompile(`ProductVersion:\s+(.+)$`)
+				ml := re.FindStringSubmatch(l)
+				info["platform_version"] = ml[1]
+
+			case strings.HasPrefix(l, "BuildVersion:"):
+				re := regexp.MustCompile(`BuildVersion:\s+(.+)$`)
+				ml := re.FindStringSubmatch(l)
+				info["platform_build"] = ml[1]
+		}
+	}
 	// This may prove worth generalizing
 	tval := new(syscall.Timeval)
 	u, err := syscall.Sysctl("kern.boottime")
@@ -30,9 +60,12 @@ func getArchInfo() (map[string]interface{}, error) {
 	}
 	buf := bytes.NewBuffer([]byte(u))
 	binary.Read(buf, binary.LittleEndian, tval)
-	info["uptime_seconds"] = int64(time.Since(time.Unix(tval.Unix())).Seconds())
+	ut := time.Since(time.Unix(tval.Unix()))
+	info["uptime_seconds"] = int64(ut.Seconds())
+	info["uptime"] = util.DurationToHuman(ut)
 
-	info["ohai_time"] = time.Now().Unix()
+	info["ohai_time"] = fmt.Sprintf("%f", float64(time.Now().UnixNano()) / float64(time.Second))
 
 	return info, nil
 }
+

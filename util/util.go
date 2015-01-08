@@ -1,5 +1,10 @@
 package util
 
+import (
+	"fmt"
+	"time"
+)
+
 // MergeMap merges two map[string]interface{} structures together. It's useful
 // for adding collected data to the overall map of data to be converted to JSON.
 func MergeMap(dst, src map[string]interface{}) error {
@@ -37,4 +42,34 @@ func merginate(dst, src interface{}) error {
 		dst = src
 	}
 	return nil
+}
+
+func DurationToHuman(d time.Duration) string {
+	days := d / (time.Hour * 24)
+	d = d - (days * time.Hour * 24)
+	hours := d / time.Hour
+	d = d - hours * time.Hour
+	minutes := d / time.Minute
+	d = d - minutes * time.Minute
+	seconds := d / time.Second
+
+	var dayStr string
+	if days == 1 {
+		dayStr = "day"
+	} else {
+		dayStr = "days"
+	}
+	var uptime string
+	switch {
+		case days > 0:
+			uptime = fmt.Sprintf("%d %s %02d hours %02d minutes %02d seconds", days, dayStr, hours, minutes, seconds)
+		case hours > 0:
+			uptime = fmt.Sprintf("%02d hours %02d minutes %02d seconds", hours, minutes, seconds) 
+		case minutes > 0:
+			uptime = fmt.Sprintf("%02d minutes %02d seconds", minutes, seconds)
+		default:
+			uptime = fmt.Sprintf("%02d seconds", seconds)
+	}
+
+	return uptime
 }
